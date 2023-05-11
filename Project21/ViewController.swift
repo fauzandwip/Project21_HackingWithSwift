@@ -14,7 +14,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         super.viewDidLoad()
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Register", style: .plain, target: self, action: #selector(registerLocal))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Schedule", style: .plain, target: self, action: #selector(scheduleLocal))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Schedule", style: .plain, target: self, action: #selector(scheduleTapped))
     }
 
     @objc func registerLocal() {
@@ -29,7 +29,11 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         }
     }
     
-    @objc func scheduleLocal() {
+    @objc func scheduleTapped() {
+        scheduleLocal(after: 5)
+    }
+    
+    @objc func scheduleLocal(after: TimeInterval) {
         registerCategories()
         
         let center = UNUserNotificationCenter.current()
@@ -50,7 +54,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
 //        let trigger = UNCalendarNotificationTrigger(dateMatching: dateCompontents, repeats: true)
         
         // timeInterval in second
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: after, repeats: false)
         
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
@@ -62,7 +66,8 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         center.delegate = self
         
         let show = UNNotificationAction(identifier: "show", title: "Tell me more...", options: .foreground)
-        let category = UNNotificationCategory(identifier: "alarm", actions: [show], intentIdentifiers: [])
+        let remind = UNNotificationAction(identifier: "remind", title: "Remind me later", options: .foreground)
+        let category = UNNotificationCategory(identifier: "alarm", actions: [show, remind], intentIdentifiers: [])
         
         center.setNotificationCategories([category])
     }
@@ -80,6 +85,9 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             case "show":
                 // the user tapped our "show more info…" button
                 showAlert(title: "Show Identifier", msg: "Show more")
+            case "remind":
+                showAlert(title: "Remind me later", msg: "Same alert is shown in 24 hours")
+                scheduleLocal(after: 86400)
             default:
                 break
             }
