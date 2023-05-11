@@ -62,8 +62,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         center.delegate = self
         
         let show = UNNotificationAction(identifier: "show", title: "Tell me more...", options: .foreground)
-        let showMore = UNNotificationAction(identifier: "showMore", title: "More, more, more...", options: .destructive)
-        let category = UNNotificationCategory(identifier: "alarm", actions: [show, showMore], intentIdentifiers: [])
+        let category = UNNotificationCategory(identifier: "alarm", actions: [show], intentIdentifiers: [])
         
         center.setNotificationCategories([category])
     }
@@ -77,13 +76,10 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             switch response.actionIdentifier {
             case UNNotificationDefaultActionIdentifier:
                 // the user swiped to unlock
-                print("Default identifier")
+                showAlert(title: "Default Notification", msg: "Default Identifier")
             case "show":
                 // the user tapped our "show more info…" button
-                print("Show more information...")
-            case "showMore":
-                // the user tapped our "show more info…" button
-                print("Show more, more, more...")
+                showAlert(title: "Show Identifier", msg: "Show more")
             default:
                 break
             }
@@ -91,6 +87,13 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         
         // you must call the completion handler when you're done
         completionHandler()
+    }
+    
+    func showAlert(title: String, msg: String) {
+        let ac = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        present(ac, animated: true)
     }
 
 }
